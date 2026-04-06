@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Car Wash — Detailing Professionnel</title>
+  <meta name="description" content="Car Wash — detailing intérieur premium, offre de lancement à 45€." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #060608;
+      --surface: #0d0d12;
+      --text: #f0f0f0;
+      --muted: rgba(240,240,240,0.42);
+      --accent: #00AAFF;
+      --accent-dim: rgba(0,170,255,0.12);
+      --accent-border: rgba(0,170,255,0.22);
+      --rule: rgba(255,255,255,0.06);
+      --container: min(1280px, calc(100vw - 80px));
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    #cursor-dot {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999;
+      transform: translate(-50%,-50%);
+      transition: width .2s, height .2s, background .2s;
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(0,170,255,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 998;
+      transform: translate(-50%,-50%);
+      transition: width .35s ease, height .35s ease, border-color .35s;
+    }
+    body.cursor-hover #cursor-dot { width: 14px; height: 14px; }
+    body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: var(--accent); }
+
+    @media (hover: none) { #cursor-dot, #cursor-ring { display: none; } body { cursor: auto; } }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.032;
+      pointer-events: none;
+      z-index: 500;
+    }
+
+    /* ── NAVBAR ── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background .4s;
+    }
+    .nav.scrolled {
+      background: rgba(6,6,8,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+    }
+    .nav-brand img { width: 34px; height: 34px; object-fit: contain; }
+    .nav-brand-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 3px;
+    }
+    .nav-links {
+      display: flex; gap: 32px; list-style: none;
+    }
+    .nav-links a {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      position: relative;
+      transition: color .2s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width .25s ease;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 35%;
+      z-index: 0;
+      transform: scale(1.06);
+      animation: heroZoom 12s ease forwards;
+    }
+    @keyframes heroZoom {
+      to { transform: scale(1); }
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, rgba(6,6,8,0.92) 35%, rgba(6,6,8,0.2) 100%),
+        linear-gradient(to bottom, rgba(6,6,8,0.3) 0%, rgba(6,6,8,0.98) 100%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: var(--container);
+      margin: 0 auto;
+      padding-bottom: 80px;
+    }
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp .8s .2s forwards;
+    }
+    .hero-eyebrow-line {
+      width: 32px; height: 1px;
+      background: var(--accent);
+    }
+    .hero-eyebrow-text {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 13vw, 160px);
+      line-height: 0.88;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      opacity: 0;
+      animation: fadeUp .9s .35s forwards;
+    }
+    .hero-title em {
+      font-style: normal;
+      color: var(--accent);
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 1.5px var(--accent);
+    }
+    .hero-sub {
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeUp .9s .5s forwards;
+      min-height: 1.65em;
+    }
+    #typed-cursor {
+      color: var(--accent);
+      animation: blink .8s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-cta-row {
+      margin-top: 36px;
+      display: flex; gap: 16px; align-items: center;
+      opacity: 0;
+      animation: fadeUp .9s .65s forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 0 28px;
+      height: 48px;
+      background: var(--accent);
+      color: #060608;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      transition: background .2s, transform .2s;
+    }
+    .btn-primary:hover { background: #29bfff; transform: translateX(3px); }
+    .btn-primary svg { flex-shrink: 0; }
+    .btn-ghost {
+      display: inline-flex; align-items: center;
+      height: 48px; padding: 0 28px;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.4); color: var(--text); }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 28px; right: 40px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeUp .9s 1s forwards;
+    }
+    .hero-scroll-hint span {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollPulse 2s ease infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.1); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      width: var(--container);
+      margin: 0 auto;
+      padding: 100px 0;
+    }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 56px;
+    }
+    .section-label::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── SERVICES ── */
+    .services-wrap {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 0 60px;
+      align-items: start;
+    }
+    .services-list { list-style: none; }
+    .service-item {
+      display: grid;
+      grid-template-columns: 56px 1fr 1fr;
+      gap: 0 24px;
+      align-items: center;
+      padding: 26px 0;
+      border-bottom: 1px solid var(--rule);
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity .5s, transform .5s;
+      cursor: default;
+    }
+    .service-item.visible {
+      opacity: 1; transform: translateX(0);
+    }
+    .service-item:first-child { border-top: 1px solid var(--rule); }
+    .s-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      transition: transform .25s;
+    }
+    .s-name {
+      font-size: 15px;
+      font-weight: 400;
+      color: rgba(240,240,240,0.85);
+      transition: color .25s, transform .25s;
+    }
+    .s-desc {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.5;
+    }
+    .service-item:hover .s-name { color: #fff; transform: translateX(6px); }
+    .service-item:hover .s-num { transform: scale(1.15); }
+
+    .services-visual {
+      position: relative;
+      height: 420px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .7s .3s, transform .7s .3s;
+    }
+    .services-visual.visible { opacity: 1; transform: translateY(0); }
+    .services-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(0.7) contrast(1.1);
+      transition: transform 6s ease;
+    }
+    .services-visual:hover img { transform: scale(1.04); }
+    .services-visual::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,170,255,0.06), transparent 60%);
+    }
+    .services-visual-tag {
+      position: absolute;
+      bottom: 16px; left: 16px;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      z-index: 1;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: var(--container);
+      margin: 0 auto;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    /* ── OFFER ── */
+    .offer-section {
+      position: relative;
+      overflow: hidden;
+    }
+    .offer-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('images/mintosko-F1kMFXM04mQ-unsplash.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      opacity: 0.07;
+      z-index: 0;
+    }
+    .offer-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--accent-border);
+    }
+    .offer-left {
+      padding: 56px 48px;
+      border-right: 1px solid var(--accent-border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      background: rgba(0,170,255,0.03);
+    }
+    .offer-price-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+    }
+    .offer-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(96px, 14vw, 160px);
+      line-height: 0.88;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .offer-price-sub {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+    .offer-right {
+      padding: 56px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+    }
+    .offer-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 4vw, 52px);
+      letter-spacing: 0.06em;
+      line-height: 1;
+    }
+    .offer-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 38ch;
+    }
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .checklist li {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      font-size: 14px;
+      color: rgba(240,240,240,0.75);
+    }
+    .checklist li::before {
+      content: '→';
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ── CONTACT ── */
+    .contact-strip {
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+    }
+    .contact-strip img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 55%;
+      filter: brightness(0.55) contrast(1.1);
+    }
+    .contact-strip::before,
+    .contact-strip::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 80px;
+      z-index: 1;
+    }
+    .contact-strip::before {
+      top: 0;
+      background: linear-gradient(to bottom, var(--bg), transparent);
+    }
+    .contact-strip::after {
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg), transparent);
+    }
+
+    .contact-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 80px;
+      align-items: end;
+    }
+    .contact-left { display: flex; flex-direction: column; gap: 12px; }
+    .contact-phone {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 6vw, 72px);
+      letter-spacing: 0.04em;
+      color: var(--text);
+      text-decoration: none;
+      display: block;
+      transition: color .25s, letter-spacing .3s;
+      line-height: 1;
+    }
+    .contact-phone:hover {
+      color: var(--accent);
+      letter-spacing: 0.09em;
+    }
+    .contact-avail {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+    .contact-right {
+      padding-bottom: 4px;
+    }
+    .contact-info-block {
+      border-left: 1px solid var(--accent-border);
+      padding-left: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .contact-info-item {}
+    .contact-info-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 4px;
+    }
+    .contact-info-value {
+      font-size: 14px;
+      color: rgba(240,240,240,0.7);
+    }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      width: var(--container);
+      margin: 0 auto;
+      padding: 28px 0 40px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: var(--muted);
+    }
+    .footer-copy {
+      font-size: 11px;
+      color: rgba(240,240,240,0.25);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── REVEAL UTIL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s, transform .7s;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      :root { --container: calc(100vw - 40px); }
+      .nav { padding: 0 20px; }
+      .nav-links { gap: 20px; }
+      .services-wrap { grid-template-columns: 1fr; }
+      .services-visual { height: 220px; margin-top: 32px; }
+      .service-item { grid-template-columns: 44px 1fr; }
+      .s-desc { display: none; }
+      .offer-grid { grid-template-columns: 1fr; }
+      .offer-left { border-right: none; border-bottom: 1px solid var(--accent-border); padding: 36px 28px; }
+      .offer-right { padding: 36px 28px; }
+      .contact-body { grid-template-columns: 1fr; gap: 40px; }
+      .contact-info-block { border-left: none; border-top: 1px solid var(--accent-border); padding-left: 0; padding-top: 20px; flex-direction: row; gap: 32px; }
+      .site-footer { flex-direction: column; gap: 8px; text-align: center; }
+      .hero-scroll-hint { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      :root { --container: calc(100vw - 28px); }
+      .nav-links { display: none; }
+      .section { padding: 64px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- NAVBAR -->
+  <header class="nav" id="navbar">
+    <a class="nav-brand" href="#hero">
+      <img src="images/logo.png" alt="Car Wash" />
+      <span class="nav-brand-text">Car Wash</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#offre">Offre</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <img class="hero-bg"
+      src="images/ivan-kazlouskij-pJp7Ji0SeII-unsplash.jpg"
+      alt="" />
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="hero-eyebrow-line"></span>
+        <span class="hero-eyebrow-text">Detailing Intérieur · Île-de-France</span>
+      </div>
+      <h1 class="hero-title">Car<br><em>Wash</em></h1>
+      <p class="hero-sub">
+        <span id="typed-text"></span><span id="typed-cursor">|</span>
+      </p>
+      <div class="hero-cta-row">
+        <a class="btn-primary" href="#contact">
+          Réserver maintenant
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a class="btn-ghost" href="#services">Voir les services</a>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" style="background: var(--surface);">
+    <div class="section">
+      <div class="section-label">Nos prestations</div>
+      <div class="services-wrap">
+        <ul class="services-list">
+          <li class="service-item">
+            <span class="s-num">01</span>
+            <span class="s-name">Aspiration complète</span>
+            <span class="s-desc">Nettoyage approfondi de l'habitacle et des zones difficiles d'accès.</span>
+          </li>
+          <li class="service-item">
+            <span class="s-num">02</span>
+            <span class="s-name">Nettoyage plastiques & tableau de bord</span>
+            <span class="s-desc">Dépoussiérage précis et finition propre au toucher, sans effet gras.</span>
+          </li>
+          <li class="service-item">
+            <span class="s-num">03</span>
+            <span class="s-name">Shampoing sièges (injecteur-extracteur)</span>
+            <span class="s-desc">Traitement textile en profondeur, tissus ravivés, odeurs neutralisées.</span>
+          </li>
+          <li class="service-item">
+            <span class="s-num">04</span>
+            <span class="s-name">Finition brillante — machine à vapeur</span>
+            <span class="s-desc">Retouches détaillées pour un intérieur valorisé et net.</span>
+          </li>
+        </ul>
+        <figure class="services-visual">
+          <img src="images/ivan-kazlouskij-DszMxkyQ2Fk-unsplash.jpg" alt="Intérieur détaillé" loading="lazy" />
+          <span class="services-visual-tag">Détail intérieur</span>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFER -->
+  <section id="offre" class="offer-section">
+    <div class="section">
+      <div class="section-label reveal">Offre de lancement</div>
+      <div class="offer-grid reveal">
+        <div class="offer-left">
+          <p class="offer-price-label">Prix unique</p>
+          <p class="offer-price">45€</p>
+          <p class="offer-price-sub">Intervention sur site · Île-de-France</p>
+        </div>
+        <div class="offer-right">
+          <h2 class="offer-title">Detailing<br>Complet</h2>
+          <p class="offer-desc">Une formule unique pensée pour redonner immédiatement une sensation premium à votre habitacle.</p>
+          <ul class="checklist">
+            <li>Aspiration complète de l'intérieur</li>
+            <li>Nettoyage plastiques & tableau de bord</li>
+            <li>Shampoing sièges injecteur-extracteur</li>
+            <li>Finition brillante à la vapeur</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" style="background: var(--surface);">
+    <div class="contact-strip">
+      <img src="images/ivan-kazlouskij-zASFpHPZ_TY-unsplash.jpg" alt="" loading="lazy" />
+    </div>
+    <div class="section" style="padding-top: 48px;">
+      <div class="section-label reveal">Contact</div>
+      <div class="contact-body reveal">
+        <div class="contact-left">
+          <p class="contact-avail" style="font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); font-family:'DM Mono',monospace;">Prenez rendez-vous</p>
+          <a class="contact-phone" href="tel:+33000000000">[VOTRE NUMÉRO]</a>
+          <p class="contact-avail">Disponible du lundi au samedi · Réponse rapide</p>
+        </div>
+        <div class="contact-right">
+          <div class="contact-info-block">
+            <div class="contact-info-item">
+              <p class="contact-info-label">Zone d'intervention</p>
+              <p class="contact-info-value">Vigneux-Sur-Seine</p>
+            </div>
+            <div class="contact-info-item">
+              <p class="contact-info-label">Type de service</p>
+              <p class="contact-info-value">Nettoyage intérieur complet</p>
+            </div>
+            <div class="contact-info-item">
+              <p class="contact-info-label">Offre actuelle</p>
+              <p class="contact-info-value">Detailing Complet — 45€</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="site-footer">
+      <span class="footer-brand">Car Wash</span>
+      <span class="footer-copy">Detailing intérieur · Île-de-France · 2026</span>
+    </div>
+  </footer>
+
+  <script>
+    /* CURSOR */
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    document.addEventListener('mouseover', e => {
+      if (e.target.closest('a,button')) document.body.classList.add('cursor-hover');
+    });
+    document.addEventListener('mouseout', e => {
+      if (e.target.closest('a,button')) document.body.classList.remove('cursor-hover');
+    });
+    (function loop() {
+      dot.style.cssText = `left:${mx}px;top:${my}px`;
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.cssText = `left:${rx}px;top:${ry}px`;
+      requestAnimationFrame(loop);
+    })();
+
+    /* NAVBAR SCROLL */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* TYPING ANIMATION */
+    const phrase = 'L\'intérieur de votre véhicule, traité comme il le mérite.';
+    const typedEl = document.getElementById('typed-text');
+    let i = 0;
+    const t = setInterval(() => {
+      typedEl.textContent += phrase[i++];
+      if (i >= phrase.length) clearInterval(t);
+    }, 38);
+
+    /* SMOOTH SCROLL */
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const el = document.querySelector(a.getAttribute('href'));
+        if (!el) return;
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* INTERSECTION OBSERVER — services */
+    const serviceItems = document.querySelectorAll('.service-item');
+    const io1 = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const i = [...serviceItems].indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('visible'), i * 110);
+        io1.unobserve(entry.target);
+      });
+    }, { threshold: 0.15 });
+    serviceItems.forEach(el => io1.observe(el));
+
+    const servVis = document.querySelector('.services-visual');
+    const io2 = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io2.unobserve(e.target); } });
+    }, { threshold: 0.2 });
+    if (servVis) io2.observe(servVis);
+
+    /* INTERSECTION OBSERVER — generic reveals */
+    const reveals = document.querySelectorAll('.reveal');
+    const io3 = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io3.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => io3.observe(el));
+  </script>
+</body>
+</html>
