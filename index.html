@@ -513,7 +513,8 @@
       align-items: end;
     }
     .contact-left { display: flex; flex-direction: column; gap: 12px; }
-    .contact-phone {
+    .contact-phone,
+    .contact-mail {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(40px, 6vw, 72px);
       letter-spacing: 0.04em;
@@ -523,7 +524,10 @@
       transition: color .25s, letter-spacing .3s;
       line-height: 1;
     }
-    .contact-phone:hover {
+    .contact-phone:hover,
+    .contact-phone:focus-visible,
+    .contact-mail:hover,
+    .contact-mail:focus-visible {
       color: var(--accent);
       letter-spacing: 0.09em;
     }
@@ -542,7 +546,6 @@
       flex-direction: column;
       gap: 20px;
     }
-    .contact-info-item {}
     .contact-info-label {
       font-size: 9px;
       letter-spacing: 3px;
@@ -731,8 +734,10 @@
       <div class="section-label reveal">Contact</div>
       <div class="contact-body reveal">
         <div class="contact-left">
-          <p class="contact-avail" style="font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); font-family:'DM Mono',monospace;">Prenez rendez-vous</p>
-          <a class="contact-phone" href="tel:+33000000000">[VOTRE NUMÉRO]</a>
+          <p class="contact-avail" style="font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); font-family:'DM Mono',monospace;">Prenez rendez-vous au :</p>
+          <a class="contact-phone" href="tel:+33752424610">07 52 42 46 10</a>
+          <p class="contact-avail" style="font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); font-family:'DM Mono',monospace;">Ou par mail :</p>
+          <a class="contact-mail" href="mailto:wsl.zdgui@gmail.com">wsl.zdgui@gmail.com</a>
           <p class="contact-avail">Disponible du lundi au samedi · Réponse rapide</p>
         </div>
         <div class="contact-right">
